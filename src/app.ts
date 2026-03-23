@@ -50,8 +50,9 @@ export function createServer() {
     const mcpServer = alexaMcp.getMcpServer();
 
     // In @hono/node-server, raw Node req/res are in c.env
-    const rawRes = (c.env as any).outgoing;
-    const rawReq = (c.env as any).incoming;
+    const envObj = c.env as Record<string, unknown>;
+    const rawRes = envObj.outgoing as import('http').ServerResponse | undefined;
+    const rawReq = envObj.incoming as import('http').IncomingMessage | undefined;
 
     if (!rawRes || !rawReq) {
       return c.text('SSE transport requires a Node.js environment (Hono node-server)', 500);
@@ -87,8 +88,9 @@ export function createServer() {
       return c.text('Session not found', 404);
     }
 
-    const rawReq = (c.env as any).incoming;
-    const rawRes = (c.env as any).outgoing;
+    const envObj = c.env as Record<string, unknown>;
+    const rawReq = envObj.incoming as import('http').IncomingMessage | undefined;
+    const rawRes = envObj.outgoing as import('http').ServerResponse | undefined;
 
     if (!rawReq || !rawRes) {
       return c.text('POST hand-off requires a Node.js environment', 500);

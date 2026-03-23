@@ -1,4 +1,15 @@
-export async function getBedroomState(_args: any, context: { env: any }) {
+/**
+ * Retrieves the aggregated state of bedroom devices including temperature,
+ * illuminance, motion sensors, and lighting statuses.
+ *
+ * @param _args - Unused tool arguments.
+ * @param context - The context containing environment variables including `API_BASE`.
+ * @returns The structured response summarizing the bedroom state for the MCP client.
+ */
+export async function getBedroomState(
+  _args: unknown,
+  context: { env: Record<string, string | undefined> },
+) {
   const apiBase = context.env?.API_BASE;
 
   if (!apiBase) {
