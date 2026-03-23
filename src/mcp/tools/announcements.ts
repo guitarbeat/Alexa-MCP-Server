@@ -1,9 +1,16 @@
 import type { z } from 'zod';
 import { AlexaAnnounceSchema } from '@/schemas/alexa';
 
+/**
+ * Sends a voice announcement to specific or all Alexa devices.
+ *
+ * @param args - The payload containing the message to announce and optional device names.
+ * @param context - The context containing environment variables including `API_BASE`.
+ * @returns The structured response to return to the MCP client.
+ */
 export async function announceAlexa(
   args: z.infer<typeof AlexaAnnounceSchema>,
-  context: { env: any },
+  context: { env: Record<string, string | undefined> },
 ) {
   const { name, message } = args;
   const apiBase = context.env?.API_BASE;
