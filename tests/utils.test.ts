@@ -27,7 +27,7 @@ describe('buildAlexaHeaders', () => {
 
     const additional = {
       'Content-Type': 'application/json',
-      'X-Custom': 'test'
+      'X-Custom': 'test',
     };
 
     const headers = buildAlexaHeaders(env, additional);

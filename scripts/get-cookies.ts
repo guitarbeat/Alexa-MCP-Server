@@ -55,9 +55,10 @@ async function main() {
     amazonPageProxyLanguage: 'en_US',
   };
 
-  alexaCookie.generateAlexaCookie('', '', options, (err: any, result: any) => {
+  alexaCookie.generateAlexaCookie('', '', options, (err: unknown, result: unknown) => {
     if (err) {
-      if (err.message && err.message.includes('Please open http')) {
+      const error = err as { message?: string };
+      if (error.message && error.message.includes('Please open http')) {
         // This is just the instruction to the user, not a real error
         return;
       }
@@ -65,17 +66,20 @@ async function main() {
       process.exit(1);
     }
 
-    if (result && result.localCookie) {
+    const res = result as { localCookie?: string };
+    if (res && res.localCookie) {
       console.log('\n✅ Success! Cookie collected.');
 
       // Extract ubid-main and at-main from the cookie string
-      const cookies = result.localCookie.split(';').reduce((acc: any, curr: string) => {
-        const [key, value] = curr.trim().split('=');
-        if (key && value) {
-          acc[key] = value;
-        }
-        return acc;
-      }, {});
+      const cookies = res.localCookie
+        .split(';')
+        .reduce((acc: Record<string, string>, curr: string) => {
+          const [key, value] = curr.trim().split('=');
+          if (key && value) {
+            acc[key] = value;
+          }
+          return acc;
+        }, {});
 
       const ubidMain = cookies['ubid-main'];
       const atMain = cookies['at-main'];
@@ -87,7 +91,7 @@ async function main() {
         console.log(`AT_MAIN: ${atMain.substring(0, 10)}...`);
       } else {
         console.error('\n❌ Could not find ubid-main or at-main in the collected cookie.');
-        console.log('Raw result keys:', Object.keys(result));
+        console.log('Raw result keys:', Object.keys(res));
         console.log('Cookie keys found:', Object.keys(cookies));
       }
 

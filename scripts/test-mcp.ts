@@ -12,16 +12,16 @@ async function main() {
   console.log(`Connecting to ${BASE_URL}/sse...`);
 
   const es = new EventSource(`${BASE_URL}/sse`);
-  const responses: Record<string, any> = {};
+  const responses: Record<string, unknown> = {};
   let postUrl = '';
 
   // Listen for message events (MCP responses come through here)
   es.addEventListener('message', (event) => {
     try {
-      const data = JSON.parse(event.data);
+      const data = JSON.parse(event.data) as Record<string, unknown>;
       console.log('\n📥 SSE Response:', JSON.stringify(data, null, 2));
       if (data.id) {
-        responses[data.id] = data;
+        responses[data.id as string] = data;
       }
     } catch {
       console.log('\n📥 SSE Message:', event.data);
