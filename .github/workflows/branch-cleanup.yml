@@ -1,0 +1,81 @@
+name: Branch Cleanup
+
+on:
+  schedule:
+    - cron: '0 9 * * 1'
+  workflow_dispatch:
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Clean up branches
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git fetch --all --prune
+          MAIN_SHA=$(git rev-parse origin/main)
+          DELETED=()
+          AUTO_MERGED=()
+          CONFLICTED=()
+
+          for remote_branch in $(git branch -r | grep -v 'HEAD\|origin/main' | sed 's|origin/||'); do
+            echo "=== Checking: $remote_branch ==="
+            BRANCH_SHA=$(git rev-parse "origin/$remote_branch")
+
+            if git merge-base --is-ancestor "$BRANCH_SHA" "$MAIN_SHA"; then
+              echo "  Already merged, deleting"
+              git push origin --delete "$remote_branch"
+              DELETED+=("$remote_branch")
+              continue
+            fi
+
+            EXISTING=$(gh pr list --head "$remote_branch" --state open --json number -q '.[0].number' 2>/dev/null || echo "")
+            if [ -n "$EXISTING" ]; then
+              echo "  Open PR exists, skipping"
+              continue
+            fi
+
+            echo "  No PR found, creating"
+            PR_OUTPUT=$(gh pr create \
+              --head "$remote_branch" \
+              --base main \
+              --title "chore: auto-merge $remote_branch into main" \
+              --body "This PR was automatically created by the weekly branch cleanup workflow. Branch had commits not yet in main and no open pull request." \
+              2>&1) || true
+
+            PR_NUM=$(echo "$PR_OUTPUT" | grep -oE '[0-9]+$' | head -1)
+
+            if [ -z "$PR_NUM" ]; then
+              CONFLICTED+=("$remote_branch (could not create PR)")
+              continue
+            fi
+
+            if gh pr merge "$PR_NUM" --merge --delete-branch 2>&1; then
+              AUTO_MERGED+=("$remote_branch (PR #$PR_NUM)")
+            else
+              CONFLICTED+=("$remote_branch (PR #$PR_NUM merge conflict)")
+            fi
+          done
+
+          printf 'Deleted: %d\n' "${#DELETED[@]}"
+          printf 'Auto-merged: %d\n' "${#AUTO_MERGED[@]}"
+          printf 'Needs review: %d\n' "${#CONFLICTED[@]}"
+
+          if [ "${#CONFLICTED[@]}" -gt 0 ]; then
+            BODY="The weekly branch cleanup workflow could not process these branches. Please review manually.\n\n"
+            for b in "${CONFLICTED[@]}"; do
+              BODY+="- $b\n"
+            done
+            gh issue create --title "Branch cleanup: manual review needed" --body "$(echo -e "$BODY")" || true
+          fi
