@@ -8,7 +8,8 @@ import { lightsApp } from './api/v1/lights';
 import { volumeApp } from './api/v1/volume';
 import { sensorsApp } from './api/v1/sensors';
 import { dndApp } from './api/v1/dnd';
-import { alexaMcp } from './mcp/server';
+import { HomeIOMCP } from './mcp/server';
+import { VERSION } from './constants';
 import { Env } from './types/env';
 
 // Store active transports in memory
@@ -28,7 +29,7 @@ export function createServer() {
   app.get('/', (c) =>
     c.json({
       name: 'Alexa MCP Server',
-      version: '1.2.2',
+      version: VERSION,
       endpoints: { api: '/api', mcp: '/mcp', sse: '/sse' },
     }),
   );
@@ -47,7 +48,8 @@ export function createServer() {
   // --- MCP Integration ---
 
   app.get('/sse', async (c) => {
-    const mcpServer = alexaMcp.getMcpServer();
+    const mcp = new HomeIOMCP(c.env as unknown as Env);
+    const mcpServer = mcp.getMcpServer();
 
     // In @hono/node-server, raw Node req/res are in c.env
     const envObj = c.env as Record<string, unknown>;
