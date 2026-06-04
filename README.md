@@ -41,7 +41,6 @@ We've automated the tedious process of collecting Amazon cookies.
 3. A local proxy will start. Complete the login in the browser window that appears.
 4. The script will automatically generate your `.env` file with the required `UBID_MAIN` and `AT_MAIN` tokens.
 
-
 ### 3. Environment Variables
 
 Create a `.env` file in the root directory and add your required variables.
