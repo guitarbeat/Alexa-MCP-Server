@@ -20,7 +20,59 @@ const transports = new Map<string, SSEServerTransport>();
 export function createServer() {
   const app = new Hono<{ Bindings: Env }>();
 
-  app.use('*', cors());
+  // In Cloudflare Workers, we would check c.env.MCP_AUTH_TOKEN
+  // We'll log a warning at startup in node environments
+  if (typeof process !== 'undefined' && process.env && !process.env.MCP_AUTH_TOKEN) {
+    console.warn('WARNING: MCP_AUTH_TOKEN is not set. API will reject all authenticated requests.');
+  }
+
+  app.use('*', async (c, next) => {
+    const origin = c.req.header('Origin');
+
+    // Get allowed origins from request env or process.env
+    const envAllowedOrigins =
+      (c.env?.ALLOWED_ORIGINS as string) ||
+      (typeof process !== 'undefined' ? process.env.ALLOWED_ORIGINS : undefined) ||
+      'http://localhost';
+    const allowedOrigins = envAllowedOrigins.split(',').map((o) => o.trim());
+
+    let allowOrigin = allowedOrigins[0]; // Default to first
+    if (origin && allowedOrigins.includes(origin)) {
+      allowOrigin = origin;
+    } else if (allowedOrigins.includes('*')) {
+      allowOrigin = '*';
+    }
+
+    const corsMiddleware = cors({
+      origin: allowOrigin,
+      allowHeaders: ['Content-Type', 'Authorization'],
+      allowMethods: ['GET', 'POST', 'OPTIONS'],
+    });
+    return corsMiddleware(c, next);
+  });
+
+  // Auth Middleware
+  app.use('*', async (c, next) => {
+    const path = new URL(c.req.url).pathname;
+
+    // Skip auth for health and root endpoints
+    if (path === '/health' || path === '/') {
+      return next();
+    }
+
+    const authHeader = c.req.header('Authorization');
+    const token = authHeader?.startsWith('Bearer ') ? authHeader.substring(7) : null;
+
+    const expectedToken =
+      (c.env?.MCP_AUTH_TOKEN as string) ||
+      (typeof process !== 'undefined' ? process.env.MCP_AUTH_TOKEN : undefined);
+
+    if (!expectedToken || token !== expectedToken) {
+      return c.json({ error: 'Unauthorized' }, 401);
+    }
+
+    return next();
+  });
 
   // Health check
   app.get('/health', (c) => c.json({ status: 'healthy', timestamp: new Date().toISOString() }));

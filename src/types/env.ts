@@ -28,6 +28,12 @@ export const EnvSchema = z.object({
 
   /** Spotify Refresh Token for OAuth */
   SPOTIFY_REFRESH_TOKEN: z.string().optional(),
+
+  /** MCP Server Authentication Token */
+  MCP_AUTH_TOKEN: z.string().optional(),
+
+  /** Allowed CORS Origins */
+  ALLOWED_ORIGINS: z.string().optional(),
 });
 
 export type Env = z.infer<typeof EnvSchema>;

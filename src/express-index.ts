@@ -26,14 +26,48 @@ const app = createMcpExpressApp({
   ].filter((h): h is string => !!h),
 });
 
+// Check MCP_AUTH_TOKEN warning
+if (!process.env.MCP_AUTH_TOKEN) {
+  console.warn('WARNING: MCP_AUTH_TOKEN is not set. API will reject all authenticated requests.');
+}
+
 // CORS middleware
 app.use((req: Request, res: Response, next: NextFunction) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  const { origin } = req.headers;
+  const envAllowedOrigins = process.env.ALLOWED_ORIGINS || 'http://localhost';
+  const allowedOrigins = envAllowedOrigins.split(',').map((o) => o.trim());
+
+  let allowOrigin = allowedOrigins[0];
+  if (origin && allowedOrigins.includes(origin)) {
+    allowOrigin = origin;
+  } else if (allowedOrigins.includes('*')) {
+    allowOrigin = '*';
+  }
+
+  res.setHeader('Access-Control-Allow-Origin', allowOrigin);
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
   if (req.method === 'OPTIONS') {
     res.status(200).end();
+    return;
+  }
+
+  next();
+});
+
+// Auth middleware
+app.use((req: Request, res: Response, next: NextFunction) => {
+  if (req.path === '/health' || req.path === '/') {
+    return next();
+  }
+
+  const authHeader = req.headers.authorization;
+  const token = authHeader?.startsWith('Bearer ') ? authHeader.substring(7) : null;
+  const expectedToken = process.env.MCP_AUTH_TOKEN;
+
+  if (!expectedToken || token !== expectedToken) {
+    res.status(401).json({ error: 'Unauthorized' });
     return;
   }
 
