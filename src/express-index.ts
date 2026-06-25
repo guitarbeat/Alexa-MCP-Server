@@ -4,14 +4,12 @@ import { createMcpExpressApp } from '@modelcontextprotocol/sdk/server/express.js
 import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js';
 import dotenv from 'dotenv';
 import type { Request, Response, NextFunction } from 'express';
-import { alexaMcp } from './mcp/server.js';
+import { HomeIOMCP } from './mcp/server.js';
+import { VERSION } from './constants.js';
 
 dotenv.config();
 
 const PORT = Number(process.env.PORT) || 8787;
-
-// Create MCP server instance
-const server = alexaMcp.getMcpServer();
 
 // Create Express app with MCP SDK helper
 const app = createMcpExpressApp({
@@ -45,6 +43,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   }
 
   res.setHeader('Access-Control-Allow-Origin', allowOrigin);
+
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
@@ -86,7 +85,7 @@ app.get('/health', (_req: Request, res: Response) => {
 app.get('/', (_req: Request, res: Response) => {
   res.json({
     name: 'Alexa MCP Server',
-    version: '1.3.0',
+    version: VERSION,
     endpoints: { sse: '/sse', messages: '/api/mcp' },
   });
 });
@@ -114,6 +113,11 @@ app.get('/sse', (req: Request, res: Response) => {
   };
 
   console.log(`[SSE] Creating transport (session: ${actualSessionId})...`);
+
+  // Create MCP server instance
+  const alexaMcp = new HomeIOMCP();
+  const server = alexaMcp.getMcpServer();
+
   server
     .connect(transport)
     .then(() => {
