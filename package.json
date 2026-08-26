@@ -24,7 +24,7 @@
     "get-cookies": "tsx scripts/get-cookies.ts"
   },
   "dependencies": {
-    "@hono/node-server": "^1.19.7",
+    "@hono/node-server": "^2.0.10",
     "@modelcontextprotocol/sdk": "1.25.1",
     "@types/express": "^5.0.6",
     "alexa-cookie2": "^5.0.3",
