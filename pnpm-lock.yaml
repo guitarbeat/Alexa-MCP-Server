@@ -10,10 +10,10 @@ importers:
     dependencies:
       '@hono/node-server':
         specifier: ^2.0.10
-        version: 2.0.10(hono@4.12.34)
+        version: 2.0.10(hono@4.13.5)
       '@modelcontextprotocol/sdk':
         specifier: 1.25.1
-        version: 1.25.1(hono@4.12.34)(supports-color@10.2.2)(zod@3.25.76)
+        version: 1.25.1(hono@4.13.5)(supports-color@10.2.2)(zod@3.25.76)
       '@types/express':
         specifier: ^5.0.6
         version: 5.0.6
@@ -27,8 +27,8 @@ importers:
         specifier: ^5.2.1
         version: 5.2.1(supports-color@10.2.2)
       hono:
-        specifier: ^4.12.34
-        version: 4.12.34
+        specifier: ^4.13.5
+        version: 4.13.5
       zod:
         specifier: ^3.25.76
         version: 3.25.76
@@ -1612,8 +1612,8 @@ packages:
     resolution: {integrity: sha512-0hJU9SCPvmMzIBdZFqNPXWa6dqh7WdH0cII9y+CyS8rG3nL48Bclra9HmKhVVUHyPWNH5Y7xDwAB7bfgSjkUMQ==}
     engines: {node: '>= 0.4'}
 
-  hono@4.12.34:
-    resolution: {integrity: sha512-GqXJqY/xJkJmuloTrnV1ZEXG3fqte+VjkUqoRNZXcrUidiUOP4fMSIHHY4tsqZBK++kVyWmt/AAfSUuy57/eSA==}
+  hono@4.13.5:
+    resolution: {integrity: sha512-O6+/eCYRkzzzy0rPWwKLiGBR1nFuUPZynnwjxN1MBA62NNqbT0wQEzQyK2gSO5yDIDB336sXQleAhOHrzlYyKw==}
     engines: {node: '>=16.9.0'}
 
   http-errors@2.0.1:
@@ -2804,13 +2804,13 @@ snapshots:
 
   '@eslint/js@8.57.1': {}
 
-  '@hono/node-server@1.19.14(hono@4.12.34)':
+  '@hono/node-server@1.19.14(hono@4.13.5)':
     dependencies:
-      hono: 4.12.34
+      hono: 4.13.5
 
-  '@hono/node-server@2.0.10(hono@4.12.34)':
+  '@hono/node-server@2.0.10(hono@4.13.5)':
     dependencies:
-      hono: 4.12.34
+      hono: 4.13.5
 
   '@humanwhocodes/config-array@0.13.0(supports-color@10.2.2)':
     dependencies:
@@ -2908,9 +2908,9 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
 
-  '@modelcontextprotocol/sdk@1.25.1(hono@4.12.34)(supports-color@10.2.2)(zod@3.25.76)':
+  '@modelcontextprotocol/sdk@1.25.1(hono@4.13.5)(supports-color@10.2.2)(zod@3.25.76)':
     dependencies:
-      '@hono/node-server': 1.19.14(hono@4.12.34)
+      '@hono/node-server': 1.19.14(hono@4.13.5)
       ajv: 8.17.1
       ajv-formats: 3.0.1(ajv@8.17.1)
       content-type: 1.0.5
@@ -4124,7 +4124,7 @@ snapshots:
     dependencies:
       function-bind: 1.1.2
 
-  hono@4.12.34: {}
+  hono@4.13.5: {}
 
   http-errors@2.0.1:
     dependencies:
