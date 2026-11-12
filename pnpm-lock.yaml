@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@hono/node-server':
-        specifier: ^2.0.10
-        version: 2.0.10(hono@4.12.34)
+        specifier: ^2.1.6
+        version: 2.1.6(hono@4.12.34)
       '@modelcontextprotocol/sdk':
         specifier: 1.25.1
         version: 1.25.1(hono@4.12.34)(supports-color@10.2.2)(zod@3.25.76)
@@ -470,11 +470,11 @@ packages:
     peerDependencies:
       hono: ^4
 
-  '@hono/node-server@2.0.10':
-    resolution: {integrity: sha512-ZcnNVhKTmyDJeg0UlnZjvM73JBsTAuhrH/J4fjwGOw59PwOW51r4J+p6CsKZWXdKSme4MFqU62CZMOsdDrU4CA==}
+  '@hono/node-server@2.1.6':
+    resolution: {integrity: sha512-p/KH9MnfNcsm3sR6x4lNgm5j+QN4Et8srKredl9DZfXiyZ1UQ3aQ2YVpFLbqktYN5JI+DB+VZFKM2PqE5hLKjQ==}
     engines: {node: '>=20'}
     peerDependencies:
-      hono: ^4
+      hono: ^4 || ^5.0.0-0
 
   '@humanwhocodes/config-array@0.13.0':
     resolution: {integrity: sha512-DZLEEqFWQFiyK6h5YIeynKx7JlvCYWL0cImfSRXZ9l4Sg2efkFGTuFf6vzXjK1cq6IYkU+Eg/JizXw+TD2vRNw==}
@@ -2808,7 +2808,7 @@ snapshots:
     dependencies:
       hono: 4.12.34
 
-  '@hono/node-server@2.0.10(hono@4.12.34)':
+  '@hono/node-server@2.1.6(hono@4.12.34)':
     dependencies:
       hono: 4.12.34
 
